@@ -38,13 +38,54 @@ jobs:
   deploy:
     runs-on: windows-latest
     needs: build
-    
+
     steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up .NET Core
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.x'
+
+      - name: Restore dependencies
+        run: dotnet restore EscolaDeCursos.WebApp/EscolaDeCursos.WebApp.csproj
+
+      - name: Install Entity Framework CLI
+        run: dotnet tool install --global dotnet-ef
+
+      - name: Apply ORM migrations to Azure SQL
+        env:
+          AZURE_SQL_CONNECTION_STRING: ${{ secrets.AZURE_SQL_CONNECTION_STRING }}
+          Logging__NewRelic__LicenseKey: ${{ secrets.Logging__NewRelic__LicenseKey }}
+        run: dotnet ef database update `
+         --project EscolaDeCursos.WebApp/EscolaDeCursos.WebApp.csproj `
+         --startup-project EscolaDeCursos.WebApp/EscolaDeCursos.WebApp.csproj `
+         --configuration Release `
+         --connection "$env:AZURE_SQL_CONNECTION_STRING"
+
       - name: Download artifact from build job
         uses: actions/download-artifact@v4
         with:
           name: .net-app
-      
+
+      - name: Login to Azure
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Configure Azure Web App settings
+        shell: pwsh
+        run: |
+          az webapp config appsettings set `
+            --resource-group "e-agenda-web-2026" `
+            --name "e-agenda-web-2026" `
+            --settings `
+              "ASPNETCORE_ENVIRONMENT=Production" `
+              "ConnectionStrings__SqlServerEF=${{ secrets.AZURE_SQL_CONNECTION_STRING }}" `
+              "Logging__NewRelic__LicenseKey=${{ secrets.NEWRELIC_LICENSE_KEY }}" `
+              "AutoMapper__LicenseKey=${{ secrets.AUTOMAPPER_LICENSE_KEY }}"
+
+
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v3
