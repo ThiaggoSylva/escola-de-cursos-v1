@@ -1,0 +1,44 @@
+@model List<TurmaListarViewModel>
+@using EscolaDeCursos.WebApp.Modulos.ModuloTurma.Apresentacao.ViewModels
+@{
+    Layout = "_Layout";
+    ViewBag.Titulo = "Turmas";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <p class="text-secondary mb-0">Gerencie as turmas oferecidas pela escola.</p>
+    <a class="btn btn-primary" asp-action="Cadastrar">+ Nova Turma</a>
+</div>
+
+<div class="card shadow-sm">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th>Turma</th><th>Curso</th><th>Instrutor</th><th>Período</th><th>Vagas</th><th class="text-end">Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (!Model.Any())
+                {
+                    <tr><td colspan="6" class="text-center text-secondary py-4">Nenhuma turma cadastrada.</td></tr>
+                }
+                @foreach (var turma in Model)
+                {
+                    <tr>
+                        <td>@turma.Nome</td>
+                        <td>@turma.CursoTitulo</td>
+                        <td>@turma.InstrutorNome</td>
+                        <td>@turma.DataInicio.ToString("dd/MM/yyyy") — @turma.DataTermino.ToString("dd/MM/yyyy")</td>
+                        <td>@turma.MatriculasAtivas / @turma.CapacidadeMaxima</td>
+                        <td class="text-end">
+                            <a class="btn btn-sm btn-outline-primary" asp-controller="Matricula" asp-action="Listar" asp-route-turmaId="@turma.Id">Alunos</a>
+                            <a class="btn btn-sm btn-outline-secondary" asp-action="Editar" asp-route-id="@turma.Id">Editar</a>
+                            <a class="btn btn-sm btn-outline-danger" asp-action="Excluir" asp-route-id="@turma.Id">Excluir</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
