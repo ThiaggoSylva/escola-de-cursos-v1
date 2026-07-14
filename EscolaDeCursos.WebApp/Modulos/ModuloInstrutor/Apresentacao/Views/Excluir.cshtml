@@ -1,0 +1,22 @@
+@model InstrutorExcluirViewModel
+@using EscolaDeCursos.WebApp.Modulos.ModuloInstrutor.Apresentacao.ViewModels
+@{
+    Layout = "_Layout";
+    ViewBag.Titulo = "Excluir Instrutor";
+}
+
+<div class="card shadow-sm border-danger-subtle" style="max-width: 640px;">
+    <div class="card-body p-4">
+        <p>Tem certeza que deseja excluir o instrutor <strong>@Model.Nome</strong>?</p>
+        <p class="text-secondary small">Instrutores vinculados a turmas não podem ser excluídos.</p>
+
+        <form asp-action="Excluir" method="post">
+            <input type="hidden" asp-for="Id" />
+            <input type="hidden" asp-for="Nome" />
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-danger">Confirmar exclusão</button>
+                <a asp-action="Listar" class="btn btn-outline-secondary">Cancelar</a>
+            </div>
+        </form>
+    </div>
+</div>
