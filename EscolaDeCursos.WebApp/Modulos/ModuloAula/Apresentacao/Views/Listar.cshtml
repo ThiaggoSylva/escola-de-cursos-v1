@@ -1,0 +1,48 @@
+@model List<AulaListarViewModel>
+@using EscolaDeCursos.Dominio.Modulos.ModuloCurso
+@using EscolaDeCursos.WebApp.Modulos.ModuloAula.Apresentacao.ViewModels
+@{
+    Curso curso = ViewBag.Curso;
+    Layout = "_Layout";
+    ViewBag.Titulo = $"Módulos do Curso: {curso.Titulo}";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <p class="text-secondary mb-0">
+        <a asp-controller="Curso" asp-action="Listar">&larr; Voltar para Cursos</a>
+    </p>
+    <a class="btn btn-primary" asp-action="Cadastrar" asp-route-cursoId="@curso.Id">+ Adicionar Módulo</a>
+</div>
+
+<div class="card shadow-sm">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th style="width:100px;">Ordem</th>
+                    <th>Título</th>
+                    <th>Duração (h)</th>
+                    <th class="text-end">Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (!Model.Any())
+                {
+                    <tr><td colspan="4" class="text-center text-secondary py-4">Nenhum módulo cadastrado para este curso.</td></tr>
+                }
+                @foreach (var aula in Model.OrderBy(a => a.Ordem))
+                {
+                    <tr>
+                        <td>@aula.Ordem</td>
+                        <td>@aula.Titulo</td>
+                        <td>@aula.Duracao h</td>
+                        <td class="text-end">
+                            <a class="btn btn-sm btn-outline-secondary" asp-action="Editar" asp-route-id="@aula.Id">Editar</a>
+                            <a class="btn btn-sm btn-outline-danger" asp-action="Excluir" asp-route-id="@aula.Id">Excluir</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

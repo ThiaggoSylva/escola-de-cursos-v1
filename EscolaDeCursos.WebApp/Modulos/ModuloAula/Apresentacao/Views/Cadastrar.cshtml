@@ -1,0 +1,41 @@
+@model AulaFormularioViewModel
+@using EscolaDeCursos.Dominio.Modulos.ModuloCurso
+@using EscolaDeCursos.WebApp.Modulos.ModuloAula.Apresentacao.ViewModels
+@{
+    Curso curso = ViewBag.Curso;
+    Layout = "_Layout";
+    ViewBag.Titulo = $"Novo Módulo — {curso.Titulo}";
+}
+
+<div class="card shadow-sm" style="max-width: 640px;">
+    <div class="card-body p-4">
+        <form asp-action="Cadastrar" method="post">
+            <input type="hidden" asp-for="CursoId" />
+            <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+            <div class="mb-3">
+                <label asp-for="Titulo" class="form-label"></label>
+                <input asp-for="Titulo" class="form-control" placeholder="Ex: Introdução ao HTML/CSS" />
+                <span asp-validation-for="Titulo" class="text-danger small"></span>
+            </div>
+
+            <div class="row g-3 mb-3">
+                <div class="col-md-6">
+                    <label asp-for="Ordem" class="form-label"></label>
+                    <input asp-for="Ordem" class="form-control" type="number" min="1" />
+                    <span asp-validation-for="Ordem" class="text-danger small"></span>
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="Duracao" class="form-label"></label>
+                    <input asp-for="Duracao" class="form-control" type="number" step="0.5" min="0.5" />
+                    <span asp-validation-for="Duracao" class="text-danger small"></span>
+                </div>
+            </div>
+
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-success">Salvar</button>
+                <a asp-action="Listar" asp-route-cursoId="@curso.Id" class="btn btn-outline-secondary">Cancelar</a>
+            </div>
+        </form>
+    </div>
+</div>
