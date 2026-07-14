@@ -22,6 +22,12 @@
             <div class="collapse navbar-collapse" id="menuPrincipal">
                 <div class="navbar-nav ms-auto">
                     <a class="nav-link" asp-controller="Home" asp-action="Index">Início</a>
+                    <a class="nav-link" asp-controller="Categoria" asp-action="Listar">Categorias</a>
+                    <a class="nav-link" asp-controller="Curso" asp-action="Listar">Cursos</a>
+                    <a class="nav-link" asp-controller="Instrutor" asp-action="Listar">Instrutores</a>
+                    <a class="nav-link" asp-controller="Aluno" asp-action="Listar">Alunos</a>
+                    <a class="nav-link" asp-controller="Turma" asp-action="Listar">Turmas</a>
+                    <a class="nav-link" asp-controller="Matricula" asp-action="Listar">Matrículas</a>
                 </div>
             </div>
         </div>
@@ -34,10 +40,16 @@
 
     @* Conteúdo da Página *@
     <main class="container pb-5">
+        <partial name="_Alertas" />
         @RenderBody()
     </main>
 
     @* Importação do JavaScript do Bootstrap *@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+
+    @* Validação client-side dos formulários (asp-validation-for) *@
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.20.1/dist/jquery.validate.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jquery-validation-unobtrusive@4.0.0/dist/jquery.validate.unobtrusive.min.js"></script>
 </body>
 </html>
