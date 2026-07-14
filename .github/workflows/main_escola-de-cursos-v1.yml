@@ -35,7 +35,7 @@ jobs:
           dotnet-version: ${{ env.DOTNET_VERSION }}
 
       - name: Restaurar dependências
-        run: dotnet restore
+        run: dotnet restore --force --no-cache
 
       - name: Build da solução
         run: dotnet build --configuration Release --no-restore
