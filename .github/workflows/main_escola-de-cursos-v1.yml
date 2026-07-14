@@ -77,8 +77,8 @@ jobs:
         shell: pwsh
         run: |
           az webapp config appsettings set `
-            --resource-group "e-agenda-web-2026" `
-            --name "e-agenda-web-2026" `
+            --resource-group "escola-de-cursos-v1" `
+            --name "escola-de-cursos-v1" `
             --settings `
               "ASPNETCORE_ENVIRONMENT=Production" `
               "ConnectionStrings__SqlServerEF=${{ secrets.AZURE_SQL_CONNECTION_STRING }}" `
