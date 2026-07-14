@@ -1,5 +1,19 @@
+using EscolaDeCursos.Dominio.Modulos.ModuloAluno;
+using EscolaDeCursos.Dominio.Modulos.ModuloAula;
+using EscolaDeCursos.Dominio.Modulos.ModuloCategoria;
+using EscolaDeCursos.Dominio.Modulos.ModuloCurso;
+using EscolaDeCursos.Dominio.Modulos.ModuloInstrutor;
+using EscolaDeCursos.Dominio.Modulos.ModuloMatricula;
+using EscolaDeCursos.Dominio.Modulos.ModuloTurma;
 using EscolaDeCursos.Infra.Comartilhado.Logging;
 using EscolaDeCursos.Infra.Compartilhado.Orm;
+using EscolaDeCursos.Infra.Modulos.ModuloAluno;
+using EscolaDeCursos.Infra.Modulos.ModuloAula;
+using EscolaDeCursos.Infra.Modulos.ModuloCategoria;
+using EscolaDeCursos.Infra.Modulos.ModuloCurso;
+using EscolaDeCursos.Infra.Modulos.ModuloInstrutor;
+using EscolaDeCursos.Infra.Modulos.ModuloMatricula;
+using EscolaDeCursos.Infra.Modulos.ModuloTurma;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -40,5 +54,14 @@ public static class InjecaoDependencia
                 opt.EnableRetryOnFailure(3);
             });
         });
+
+        // Injeta os repositórios de cada módulo
+        services.AddScoped<ICategoriaRepositorio, CategoriaRepositorio>();
+        services.AddScoped<ICursoRepositorio, CursoRepositorio>();
+        services.AddScoped<IAulaRepositorio, AulaRepositorio>();
+        services.AddScoped<IInstrutorRepositorio, InstrutorRepositorio>();
+        services.AddScoped<IAlunoRepositorio, AlunoRepositorio>();
+        services.AddScoped<ITurmaRepositorio, TurmaRepositorio>();
+        services.AddScoped<IMatriculaRepositorio, MatriculaRepositorio>();
     }
 }
