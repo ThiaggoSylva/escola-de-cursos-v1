@@ -1,86 +1,148 @@
-# Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
-# More GitHub Actions for Azure: https://github.com/Azure/actions
-
 name: Build and deploy ASP.Net Core app to Azure Web App - escola-de-cursos-v1
 
+# Dispara em push nas branches principais e permite rodar manualmente
 on:
   push:
     branches:
       - main
   workflow_dispatch:
 
+env:
+  DOTNET_VERSION: "10.0.x"
+  AZURE_WEBAPP_NAME: "escola-de-cursos-v1"          # nome do App Service (Windows) no Azure
+  PUBLISH_DIR: "${{ github.workspace }}/publish"
+  STARTUP_PROJECT: "EscolaDeCursos.WebApp"
+  INFRA_PROJECT: "EscolaDeCursos.Infra"
+
+# Observação: este workflow roda nos runners do GitHub (ubuntu-latest), não no
+# seu PC nem no App Service. Como o App Service de vocês é Windows, o único
+# lugar que muda é a configuração do recurso no Portal do Azure (Stack: .NET,
+# não "container Linux"). O `dotnet publish` gera automaticamente o web.config
+# usado pelo IIS/ANCM no App Service Windows, mesmo sendo publicado a partir
+# de um runner Linux — não precisa de nenhum passo extra aqui.
+
+permissions:
+  contents: read
+
 jobs:
+  # ---------------------------------------------------------------------
+  # 1) Build + testes + publish + gera o pacote de migrations do EF Core
+  # ---------------------------------------------------------------------
   build:
-    runs-on: windows-latest
-    permissions:
-      contents: read #This is required for actions/checkout
+    runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout do código
+        uses: actions/checkout@v4
 
-      - name: Set up .NET Core
+      - name: Instalar .NET ${{ env.DOTNET_VERSION }}
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '10.x'
+          dotnet-version: ${{ env.DOTNET_VERSION }}
 
-      - name: Build with dotnet
-        run: dotnet build --configuration Release
+      - name: Restaurar dependências
+        run: dotnet restore
 
-      - name: Build database project
-        run: dotnet build EscolaDeCursos.Database/EscolaDeCursos.Database.sqlproj --configuration Release
+      - name: Build da solução
+        run: dotnet build --configuration Release --no-restore
 
-      - name: dotnet publish
-        run: dotnet publish -c Release -o "${{env.DOTNET_ROOT}}/myapp"
+      - name: Rodar testes (se existirem projetos de teste)
+        run: |
+          if find . -iname "*.Tests.csproj" | grep -q .; then
+            dotnet test --configuration Release --no-build
+          else
+            echo "Nenhum projeto de testes encontrado — pulando."
+          fi
 
+      - name: Publicar EscolaDeCursos.WebApp
+        run: >
+          dotnet publish ${{ env.STARTUP_PROJECT }}/${{ env.STARTUP_PROJECT }}.csproj
+          --configuration Release
+          --no-build
+          --output ${{ env.PUBLISH_DIR }}
 
+      - name: Instalar dotnet-ef
+        run: dotnet tool install --global dotnet-ef --version 10.*
 
-  deploy:
-    runs-on: windows-latest
+      - name: Gerar bundle de migrations do EF Core
+        # O efbundle roda AQUI, no runner do GitHub Actions (ubuntu-latest) —
+        # não no App Service. Por isso o target-runtime é linux-x64, mesmo
+        # o App Service sendo Windows. Ele se conecta direto no Azure SQL
+        # Database via connection string, sem depender do App Service.
+        run: >
+          dotnet ef migrations bundle
+          --project ${{ env.INFRA_PROJECT }}
+          --startup-project ${{ env.STARTUP_PROJECT }}
+          --configuration Release
+          --self-contained
+          --target-runtime linux-x64
+          --output ${{ github.workspace }}/efbundle/efbundle
+
+      - name: Upload artefato - aplicação publicada
+        uses: actions/upload-artifact@v4
+        with:
+          name: webapp-publicado
+          path: ${{ env.PUBLISH_DIR }}
+
+      - name: Upload artefato - bundle de migrations
+        uses: actions/upload-artifact@v4
+        with:
+          name: efbundle
+          path: ${{ github.workspace }}/efbundle/efbundle
+
+  # ---------------------------------------------------------------------
+  # 2) Aplica as migrations do EF Core no banco (Azure SQL Database)
+  # ---------------------------------------------------------------------
+  migrate-database:
+    runs-on: ubuntu-latest
     needs: build
+    environment: production
 
     steps:
-      - uses: actions/checkout@v4
-
-      - name: Set up .NET Core
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: '10.x'
-
-      - name: Build with dotnet
-        run: dotnet build --configuration Release
-      - name: Build database project
-        run: dotnet build EscolaDeCursos.Database/EscolaDeCursos.Database.sqlproj --configuration Release
-
-
-      - name: Download artifact from build job
+      - name: Baixar bundle de migrations
         uses: actions/download-artifact@v4
         with:
-          name: .net-app
-          path: ${{env.DOTNET_ROOT}}/myapp
+          name: efbundle
+          path: ${{ github.workspace }}/efbundle
 
-      - name: Login to Azure
-        uses: azure/login@v1
+      - name: Dar permissão de execução ao bundle
+        run: chmod +x ${{ github.workspace }}/efbundle/efbundle
+
+      - name: Aplicar migrations no Azure SQL Database
+        run: >
+          ${{ github.workspace }}/efbundle/efbundle
+          --connection "${{ secrets.AZURE_SQL_CONNECTION_STRING }}"
+
+  # ---------------------------------------------------------------------
+  # 3) Deploy no Azure App Service
+  # ---------------------------------------------------------------------
+  deploy:
+    runs-on: ubuntu-latest
+    needs: migrate-database
+    environment:
+      name: production
+      url: ${{ steps.deploy-step.outputs.webapp-url }}
+
+    steps:
+      - name: Baixar artefato da aplicação
+        uses: actions/download-artifact@v4
+        with:
+          name: webapp-publicado
+          path: ${{ env.PUBLISH_DIR }}
+
+      - name: Login no Azure
+        uses: azure/login@v2
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-      - name: Configure Azure Web App settings
-        shell: pwsh
-        run: |
-          az webapp config appsettings set `
-            --resource-group "escola-de-cursos-v1" `
-            --name "escola-de-cursos-v1" `
-            --settings `
-              "ASPNETCORE_ENVIRONMENT=Production" `
-              "ConnectionStrings__SqlServerEF=${{ secrets.AZURE_SQL_CONNECTION_STRING }}" `
-              "Logging__NewRelic__LicenseKey=${{ secrets.NEWRELIC_LICENSE_KEY }}" `
-              "AutoMapper__LicenseKey=${{ secrets.AUTOMAPPER_LICENSE_KEY }}"
-
-
-      - name: Deploy to Azure Web App
-        id: deploy-to-webapp
+      - name: Deploy no Azure App Service (Windows)
+        id: deploy-step
         uses: azure/webapps-deploy@v3
         with:
-          app-name: 'escola-de-cursos-v1'
-          slot-name: 'Production'
-          package: .
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_A4AD18AA19A44ABEA0A7D41EE0D2F6F9 }}
+          app-name: ${{ env.AZURE_WEBAPP_NAME }}
+          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+          package: ${{ env.PUBLISH_DIR }}
+
+      - name: Logout do Azure
+        if: always()
+        run: az logout
