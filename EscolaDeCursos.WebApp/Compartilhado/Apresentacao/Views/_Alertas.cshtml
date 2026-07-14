@@ -1,0 +1,15 @@
+@* Exibe mensagens de sucesso/erro definidas via TempData nos Controllers (ver TempDataExtensions) *@
+@if (TempData["MensagemSucesso"] is string mensagemSucesso)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @mensagemSucesso
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+@if (TempData["MensagemErro"] is string mensagemErro)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        @mensagemErro
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
