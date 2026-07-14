@@ -1,0 +1,25 @@
+@model CategoriaFormularioViewModel
+@using EscolaDeCursos.WebApp.Modulos.ModuloCategoria.Apresentacao.ViewModels
+@{
+    Layout = "_Layout";
+    ViewBag.Titulo = "Editar Categoria";
+}
+
+<div class="card shadow-sm" style="max-width: 640px;">
+    <div class="card-body p-4">
+        <form asp-action="Editar" asp-route-id="@Model.Id" method="post">
+            <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+            <div class="mb-3">
+                <label asp-for="Titulo" class="form-label"></label>
+                <input asp-for="Titulo" class="form-control" />
+                <span asp-validation-for="Titulo" class="text-danger small"></span>
+            </div>
+
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-success">Salvar</button>
+                <a asp-action="Listar" class="btn btn-outline-secondary">Cancelar</a>
+            </div>
+        </form>
+    </div>
+</div>

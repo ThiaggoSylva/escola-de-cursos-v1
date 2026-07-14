@@ -1,0 +1,43 @@
+@model List<CategoriaListarViewModel>
+@using EscolaDeCursos.WebApp.Modulos.ModuloCategoria.Apresentacao.ViewModels
+@{
+    Layout = "_Layout";
+    ViewBag.Titulo = "Categorias";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <p class="text-secondary mb-0">Gerencie as categorias de cursos da escola.</p>
+    <a class="btn btn-primary" asp-action="Cadastrar">+ Nova Categoria</a>
+</div>
+
+<div class="card shadow-sm">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th>Título</th>
+                    <th>Cursos vinculados</th>
+                    <th class="text-end">Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (!Model.Any())
+                {
+                    <tr><td colspan="3" class="text-center text-secondary py-4">Nenhuma categoria cadastrada.</td></tr>
+                }
+                @foreach (var categoria in Model)
+                {
+                    <tr>
+                        <td>@categoria.Titulo</td>
+                        <td><span class="badge text-bg-light border">@categoria.QuantidadeCursos curso(s)</span></td>
+                        <td class="text-end">
+                            <a class="btn btn-sm btn-outline-primary" asp-controller="Curso" asp-action="Listar" asp-route-categoriaId="@categoria.Id">Ver cursos</a>
+                            <a class="btn btn-sm btn-outline-secondary" asp-action="Editar" asp-route-id="@categoria.Id">Editar</a>
+                            <a class="btn btn-sm btn-outline-danger" asp-action="Excluir" asp-route-id="@categoria.Id">Excluir</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
