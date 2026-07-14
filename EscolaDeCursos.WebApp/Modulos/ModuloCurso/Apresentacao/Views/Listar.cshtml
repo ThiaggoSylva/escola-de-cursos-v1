@@ -1,0 +1,56 @@
+@model List<CursoListarViewModel>
+@using EscolaDeCursos.WebApp.Modulos.ModuloCurso.Apresentacao.ViewModels
+@{
+    Layout = "_Layout";
+    ViewBag.Titulo = ViewBag.CategoriaTitulo is null ? "Cursos" : $"Cursos — {ViewBag.CategoriaTitulo}";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <p class="text-secondary mb-0">
+        @if (ViewBag.CategoriaTitulo is not null)
+        {
+            <span>Filtrando pela categoria <strong>@ViewBag.CategoriaTitulo</strong> — <a asp-action="Listar">ver todos os cursos</a></span>
+        }
+        else
+        {
+            <span>Gerencie os cursos oferecidos pela escola.</span>
+        }
+    </p>
+    <a class="btn btn-primary" asp-action="Cadastrar">+ Novo Curso</a>
+</div>
+
+<div class="card shadow-sm">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th>Título</th>
+                    <th>Categoria</th>
+                    <th>Nível</th>
+                    <th>Carga horária</th>
+                    <th class="text-end">Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (!Model.Any())
+                {
+                    <tr><td colspan="5" class="text-center text-secondary py-4">Nenhum curso cadastrado.</td></tr>
+                }
+                @foreach (var curso in Model)
+                {
+                    <tr>
+                        <td>@curso.Titulo</td>
+                        <td>@curso.CategoriaTitulo</td>
+                        <td><span class="badge text-bg-light border">@curso.Nivel</span></td>
+                        <td>@curso.CargaHoraria h</td>
+                        <td class="text-end">
+                            <a class="btn btn-sm btn-outline-success" asp-controller="Aula" asp-action="Listar" asp-route-cursoId="@curso.Id">Módulos</a>
+                            <a class="btn btn-sm btn-outline-secondary" asp-action="Editar" asp-route-id="@curso.Id">Editar</a>
+                            <a class="btn btn-sm btn-outline-danger" asp-action="Excluir" asp-route-id="@curso.Id">Excluir</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
