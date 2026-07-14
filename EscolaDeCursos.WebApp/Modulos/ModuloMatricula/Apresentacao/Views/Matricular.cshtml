@@ -1,0 +1,41 @@
+@model MatriculaFormularioViewModel
+@using EscolaDeCursos.WebApp.Modulos.ModuloMatricula.Apresentacao.ViewModels
+@{
+    Layout = "_Layout";
+    ViewBag.Titulo = "Matricular Aluno em Turma";
+}
+
+<div class="card shadow-sm" style="max-width: 640px;">
+    <div class="card-body p-4">
+        <form asp-action="Matricular" method="post">
+            <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+            <div class="mb-3">
+                <label asp-for="AlunoId" class="form-label"></label>
+                <select asp-for="AlunoId" class="form-select" asp-items="ViewBag.Alunos">
+                    <option value="">Selecione um aluno...</option>
+                </select>
+                <span asp-validation-for="AlunoId" class="text-danger small"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="TurmaId" class="form-label"></label>
+                <select asp-for="TurmaId" class="form-select" asp-items="ViewBag.Turmas">
+                    <option value="">Selecione uma turma...</option>
+                </select>
+                <span asp-validation-for="TurmaId" class="text-danger small"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="DataMatricula" class="form-label"></label>
+                <input asp-for="DataMatricula" class="form-control" type="date" />
+                <span asp-validation-for="DataMatricula" class="text-danger small"></span>
+            </div>
+
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-success">Matricular</button>
+                <a asp-action="Listar" class="btn btn-outline-secondary">Cancelar</a>
+            </div>
+        </form>
+    </div>
+</div>

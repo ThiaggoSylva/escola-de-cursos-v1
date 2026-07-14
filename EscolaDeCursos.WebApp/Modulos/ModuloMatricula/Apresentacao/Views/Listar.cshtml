@@ -1,0 +1,66 @@
+@model List<MatriculaListarViewModel>
+@using EscolaDeCursos.Dominio.Modulos.ModuloAluno
+@using EscolaDeCursos.Dominio.Modulos.ModuloMatricula
+@using EscolaDeCursos.Dominio.Modulos.ModuloTurma
+@using EscolaDeCursos.WebApp.Modulos.ModuloMatricula.Apresentacao.ViewModels
+@{
+    Aluno? aluno = ViewBag.Aluno;
+    Turma? turma = ViewBag.Turma;
+    Layout = "_Layout";
+    ViewBag.Titulo = aluno is not null ? $"Matrículas de {aluno.Nome}"
+        : turma is not null ? $"Alunos matriculados — {turma.Nome}"
+        : "Matrículas";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <p class="text-secondary mb-0">
+        @if (aluno is not null || turma is not null)
+        {
+            <a asp-action="Listar">&larr; ver todas as matrículas</a>
+        }
+        else
+        {
+            <span>Gerencie as matrículas de alunos em turmas.</span>
+        }
+    </p>
+    <a class="btn btn-primary" asp-action="Matricular" asp-route-turmaId="@ViewBag.TurmaId">+ Matricular Aluno</a>
+</div>
+
+<div class="card shadow-sm">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
+                <tr><th>Aluno</th><th>Turma</th><th>Curso</th><th>Data</th><th>Situação</th><th class="text-end">Ações</th></tr>
+            </thead>
+            <tbody>
+                @if (!Model.Any())
+                {
+                    <tr><td colspan="6" class="text-center text-secondary py-4">Nenhuma matrícula encontrada.</td></tr>
+                }
+                @foreach (var matricula in Model)
+                {
+                    string classeBadge = matricula.Situacao switch
+                    {
+                        SituacaoMatricula.Ativa => "text-bg-success",
+                        SituacaoMatricula.Concluida => "text-bg-primary",
+                        SituacaoMatricula.Cancelada => "text-bg-secondary",
+                        _ => "text-bg-warning"
+                    };
+                    <tr>
+                        <td>@matricula.AlunoNome</td>
+                        <td>@matricula.TurmaNome</td>
+                        <td>@matricula.CursoTitulo</td>
+                        <td>@matricula.DataMatricula.ToString("dd/MM/yyyy")</td>
+                        <td><span class="badge @classeBadge">@matricula.Situacao</span></td>
+                        <td class="text-end">
+                            @if (matricula.Situacao != SituacaoMatricula.Concluida)
+                            {
+                                <a class="btn btn-sm btn-outline-danger" asp-action="Cancelar" asp-route-id="@matricula.Id">Cancelar</a>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
