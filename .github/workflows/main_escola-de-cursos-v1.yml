@@ -4,13 +4,12 @@ name: Build and deploy ASP.Net Core app to Azure Web App - escola-de-cursos-v1
 on:
   push:
     branches:
-      - v1
       - main
   workflow_dispatch:
 
 env:
   DOTNET_VERSION: "10.0.x"
-  AZURE_WEBAPP_NAME: "escola-de-cursos-2026"        # nome do App Service (Windows) no Azure
+  AZURE_WEBAPP_NAME: "escola-de-cursos-v1"        # nome do App Service (Windows) no Azure
   PUBLISH_DIR: "${{ github.workspace }}/publish"
   WEBAPP_PROJECT: "EscolaDeCursos.WebApp/EscolaDeCursos.WebApp.csproj"
   INFRA_PROJECT: "EscolaDeCursos.Infra/EscolaDeCursos.Infra.csproj"
