@@ -52,7 +52,6 @@ jobs:
         run: >
           dotnet publish ${{ env.WEBAPP_PROJECT }}
           --configuration Release
-          --no-build
           --output ${{ env.PUBLISH_DIR }}
 
       - name: Upload artefato - aplicação publicada
@@ -82,6 +81,17 @@ jobs:
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
 
+      - name: Cache NuGet
+        uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }}
+          restore-keys: |
+            ${{ runner.os }}-nuget-
+
+      - name: Instalar workloads
+        run: dotnet workload restore
+
       - name: Restaurar dependências
         run: dotnet restore
 
@@ -90,10 +100,10 @@ jobs:
 
       - name: Aplicar migrations no Azure SQL Database
         run: >
-          dotnet ef database update `
-          --project ${{ env.INFRA_PROJECT }} `
-          --startup-project ${{ env.INFRA_PROJECT }} `
-          --configuration Release `
+          dotnet ef database update
+          --project ${{ env.INFRA_PROJECT }}
+          --startup-project ${{ env.WEBAPP_PROJECT }}
+          --configuration Release
           --connection "$env:AZURE_SQL_CONNECTION_STRING"
         env:
           AZURE_SQL_CONNECTION_STRING: ${{ secrets.AZURE_SQL_CONNECTION_STRING }}
@@ -115,11 +125,6 @@ jobs:
           name: webapp-publicado
           path: ${{ env.PUBLISH_DIR }}
 
-      - name: Login no Azure
-        uses: azure/login@v2
-        with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
-
       - name: Deploy no Azure App Service
         id: deploy-step
         uses: azure/webapps-deploy@v3
@@ -128,6 +133,4 @@ jobs:
           publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
           package: ${{ env.PUBLISH_DIR }}
 
-      - name: Logout do Azure
-        if: always()
-        run: az logout
+
