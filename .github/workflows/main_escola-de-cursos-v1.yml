@@ -95,14 +95,21 @@ jobs:
       - name: Restaurar dependências
         run: dotnet restore
 
+      - name: Validar connection string
+        shell: powershell
+        run: |
+          Write-Host $env:AZURE_SQL_CONNECTION_STRING
+        env:
+         AZURE_SQL_CONNECTION_STRING: ${{ secrets.AZURE_SQL_CONNECTION_STRING }}
+
       - name: Instalar dotnet-ef
         run: dotnet tool install --global dotnet-ef --version 10.*
 
       - name: Aplicar migrations no Azure SQL Database
         run: >
           dotnet ef database update
-          --project ${{ env.INFRA_PROJECT }}
-          --startup-project ${{ env.WEBAPP_PROJECT }}
+          --project EscolaDeCursos.Infra/EscolaDeCursos.Infra.csproj
+          --startup-project EscolaDeCursos.WebApp/EscolaDeCursos.WebApp.csproj
           --configuration Release
           --connection "$env:AZURE_SQL_CONNECTION_STRING"
         env:
