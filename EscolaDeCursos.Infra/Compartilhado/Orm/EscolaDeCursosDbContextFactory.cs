@@ -17,7 +17,15 @@ public class EscolaDeCursosDbContextFactory
 
         DbContextOptionsBuilder<EscolaDeCursosDbContext> optionsBuilder = new();
 
-        optionsBuilder.UseSqlServer(connectionString);
+        optionsBuilder.UseSqlServer(
+    connectionString,
+    options =>
+    {
+        options.EnableRetryOnFailure(
+            maxRetryCount: 5,
+            maxRetryDelay: TimeSpan.FromSeconds(10),
+            errorNumbersToAdd: null);
+    });
 
         return new EscolaDeCursosDbContext(optionsBuilder.Options);
     }
