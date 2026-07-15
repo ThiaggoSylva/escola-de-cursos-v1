@@ -95,23 +95,41 @@ jobs:
       - name: Restaurar dependências
         run: dotnet restore
 
-      - name: Validar connection string
+      - name: Verificar variável
         shell: powershell
         run: |
-          Write-Host $env:AZURE_SQL_CONNECTION_STRING
+          if ($env:AZURE_SQL_CONNECTION_STRING) {
+          Write-Host "Connection String encontrada"
+          }
+          else {
+          Write-Host "Connection String NÃO encontrada"
+          exit 1
+          }
         env:
-         AZURE_SQL_CONNECTION_STRING: ${{ secrets.AZURE_SQL_CONNECTION_STRING }}
+          AZURE_SQL_CONNECTION_STRING: ${{ secrets.AZURE_SQL_CONNECTION_STRING }}
 
       - name: Instalar dotnet-ef
         run: dotnet tool install --global dotnet-ef --version 10.*
 
+      - name: Validar Secret SQL
+        shell: powershell
+        run: |
+           if ([string]::IsNullOrWhiteSpace($env:AZURE_SQL_CONNECTION_STRING)) {
+           Write-Error "Secret vazio"
+           exit 1
+           }
+
+           Write-Host "Secret carregado com sucesso"
+        env:
+         AZURE_SQL_CONNECTION_STRING: ${{ secrets.AZURE_SQL_CONNECTION_STRING }}
+
       - name: Aplicar migrations no Azure SQL Database
-        run: >
-          dotnet ef database update
-          --project EscolaDeCursos.Infra/EscolaDeCursos.Infra.csproj
-          --startup-project EscolaDeCursos.WebApp/EscolaDeCursos.WebApp.csproj
-          --configuration Release
-          --connection "$env:AZURE_SQL_CONNECTION_STRING"
+        shell: powershell
+        run: |
+         dotnet ef database update `
+         --project EscolaDeCursos.Infra/EscolaDeCursos.Infra.csproj `
+         --startup-project EscolaDeCursos.WebApp/EscolaDeCursos.WebApp.csproj `
+         --configuration Release
         env:
           AZURE_SQL_CONNECTION_STRING: ${{ secrets.AZURE_SQL_CONNECTION_STRING }}
 
