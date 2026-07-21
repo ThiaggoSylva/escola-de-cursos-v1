@@ -20,14 +20,39 @@
             </button>
 
             <div class="collapse navbar-collapse" id="menuPrincipal">
-                <div class="navbar-nav ms-auto">
+                <div class="navbar-nav me-auto">
                     <a class="nav-link" asp-controller="Home" asp-action="Index">Início</a>
                     <a class="nav-link" asp-controller="Categoria" asp-action="Listar">Categorias</a>
                     <a class="nav-link" asp-controller="Curso" asp-action="Listar">Cursos</a>
                     <a class="nav-link" asp-controller="Instrutor" asp-action="Listar">Instrutores</a>
-                    <a class="nav-link" asp-controller="Aluno" asp-action="Listar">Alunos</a>
-                    <a class="nav-link" asp-controller="Turma" asp-action="Listar">Turmas</a>
-                    <a class="nav-link" asp-controller="Matricula" asp-action="Listar">Matrículas</a>
+
+                    @if (User.Identity?.IsAuthenticated == true)
+                    {
+                        @if (User.IsInRole("Administrador") || User.IsInRole("Instrutor"))
+                        {
+                            <a class="nav-link" asp-controller="Aluno" asp-action="Listar">Alunos</a>
+                        }
+                        <a class="nav-link" asp-controller="Turma" asp-action="Listar">Turmas</a>
+                        <a class="nav-link" asp-controller="Matricula" asp-action="Listar">
+                            @(User.IsInRole("Aluno") ? "Minhas Matrículas" : "Matrículas")
+                        </a>
+                    }
+                </div>
+
+                <div class="navbar-nav">
+                    @if (User.Identity?.IsAuthenticated == true)
+                    {
+                        <span class="nav-link text-muted">Olá, @User.FindFirst(System.Security.Claims.ClaimTypes.GivenName)?.Value</span>
+                        <form asp-controller="Conta" asp-action="Sair" method="post" class="d-flex">
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="btn btn-link nav-link">Sair</button>
+                        </form>
+                    }
+                    else
+                    {
+                        <a class="nav-link" asp-controller="Conta" asp-action="Login">Entrar</a>
+                        <a class="nav-link" asp-controller="Conta" asp-action="Registrar">Criar conta</a>
+                    }
                 </div>
             </div>
         </div>

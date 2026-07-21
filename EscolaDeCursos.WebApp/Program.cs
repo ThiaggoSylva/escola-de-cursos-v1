@@ -1,5 +1,6 @@
 using EscolaDeCursos.Aplicacao;
 using EscolaDeCursos.Infra;
+using EscolaDeCursos.Infra.Compartilhado.Identidade;
 using EscolaDeCursos.WebApp.Compartilhado;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -12,8 +13,13 @@ builder.Services.AddPresentationConfig(builder.Configuration);
 
 var app = builder.Build();
 
-// Middlewares de roteamento
+// Garante que as roles e o usuário Administrador padrão existam
+await IdentitySeeder.SeedAsync(app.Services);
+
+// Middlewares de roteamento e segurança
 app.UseRouting();
+app.UseAuthentication();
+app.UseAuthorization();
 app.MapDefaultControllerRoute();
 
 // Execução do Servidor

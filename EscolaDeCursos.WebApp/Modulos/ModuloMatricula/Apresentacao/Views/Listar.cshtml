@@ -23,7 +23,10 @@
             <span>Gerencie as matrículas de alunos em turmas.</span>
         }
     </p>
-    <a class="btn btn-primary" asp-action="Matricular" asp-route-turmaId="@ViewBag.TurmaId">+ Matricular Aluno</a>
+    @if (!User.IsInRole("Instrutor"))
+    {
+        <a class="btn btn-primary" asp-action="Matricular" asp-route-turmaId="@ViewBag.TurmaId">+ Matricular Aluno</a>
+    }
 </div>
 
 <div class="card shadow-sm">
@@ -53,7 +56,7 @@
                         <td>@matricula.DataMatricula.ToString("dd/MM/yyyy")</td>
                         <td><span class="badge @classeBadge">@matricula.Situacao</span></td>
                         <td class="text-end">
-                            @if (matricula.Situacao != SituacaoMatricula.Concluida)
+                            @if (matricula.Situacao != SituacaoMatricula.Concluida && !User.IsInRole("Instrutor"))
                             {
                                 <a class="btn btn-sm btn-outline-danger" asp-action="Cancelar" asp-route-id="@matricula.Id">Cancelar</a>
                             }

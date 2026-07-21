@@ -6,4 +6,10 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <!-- Contém apenas IdentityUser/IdentityRole (sem dependência de ASP.NET Core web),
+         por isso pode ser referenciado com segurança pela camada de Domínio. -->
+    <PackageReference Include="Microsoft.Extensions.Identity.Stores" Version="10.0.9" />
+  </ItemGroup>
+
 </Project>

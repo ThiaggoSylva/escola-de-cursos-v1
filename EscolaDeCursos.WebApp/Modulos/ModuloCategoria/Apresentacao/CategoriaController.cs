@@ -2,9 +2,11 @@ using AutoMapper;
 using EscolaDeCursos.Aplicacao.Modulos.ModuloCategoria;
 using EscolaDeCursos.Aplicacao.Modulos.ModuloCurso;
 using EscolaDeCursos.Dominio.Modulos.ModuloCategoria;
+using EscolaDeCursos.Dominio.Compartilhado.Identidade;
 using EscolaDeCursos.WebApp.Compartilhado.Extensions;
 using EscolaDeCursos.WebApp.Modulos.ModuloCategoria.Apresentacao.ViewModels;
 using FluentResults;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EscolaDeCursos.WebApp.Modulos.ModuloCategoria.Apresentacao;
@@ -33,6 +35,7 @@ public class CategoriaController(
     }
 
     [HttpGet]
+    [Authorize(Roles = nameof(Perfil.Administrador))]
     public IActionResult Cadastrar()
     {
         return View(new CategoriaFormularioViewModel());
@@ -40,6 +43,7 @@ public class CategoriaController(
 
     [HttpPost]
     [ValidateAntiForgeryToken]
+    [Authorize(Roles = nameof(Perfil.Administrador))]
     public IActionResult Cadastrar(CategoriaFormularioViewModel viewModel)
     {
         if (!ModelState.IsValid)
@@ -61,6 +65,7 @@ public class CategoriaController(
     }
 
     [HttpGet]
+    [Authorize(Roles = nameof(Perfil.Administrador))]
     public IActionResult Editar(Guid id)
     {
         Categoria? categoria = categoriaServico.SelecionarPorId(id);
@@ -76,6 +81,7 @@ public class CategoriaController(
 
     [HttpPost]
     [ValidateAntiForgeryToken]
+    [Authorize(Roles = nameof(Perfil.Administrador))]
     public IActionResult Editar(Guid id, CategoriaFormularioViewModel viewModel)
     {
         if (!ModelState.IsValid)
@@ -97,6 +103,7 @@ public class CategoriaController(
     }
 
     [HttpGet]
+    [Authorize(Roles = nameof(Perfil.Administrador))]
     public IActionResult Excluir(Guid id)
     {
         Categoria? categoria = categoriaServico.SelecionarPorId(id);
@@ -111,6 +118,7 @@ public class CategoriaController(
 
     [HttpPost]
     [ValidateAntiForgeryToken]
+    [Authorize(Roles = nameof(Perfil.Administrador))]
     public IActionResult Excluir(CategoriaExcluirViewModel viewModel)
     {
         Result resultado = categoriaServico.Excluir(viewModel.Id);

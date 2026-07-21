@@ -4,11 +4,13 @@ using EscolaDeCursos.Aplicacao.Modulos.ModuloInstrutor;
 using EscolaDeCursos.Aplicacao.Modulos.ModuloMatricula;
 using EscolaDeCursos.Aplicacao.Modulos.ModuloTurma;
 using EscolaDeCursos.Dominio.Modulos.ModuloCurso;
+using EscolaDeCursos.Dominio.Compartilhado.Identidade;
 using EscolaDeCursos.Dominio.Modulos.ModuloInstrutor;
 using EscolaDeCursos.Dominio.Modulos.ModuloTurma;
 using EscolaDeCursos.WebApp.Compartilhado.Extensions;
 using EscolaDeCursos.WebApp.Modulos.ModuloTurma.Apresentacao.ViewModels;
 using FluentResults;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
@@ -39,6 +41,7 @@ public class TurmaController(
     }
 
     [HttpGet]
+    [Authorize(Roles = nameof(Perfil.Administrador))]
     public IActionResult Cadastrar()
     {
         CarregarListasSelecao();
@@ -47,6 +50,7 @@ public class TurmaController(
 
     [HttpPost]
     [ValidateAntiForgeryToken]
+    [Authorize(Roles = nameof(Perfil.Administrador))]
     public IActionResult Cadastrar(TurmaFormularioViewModel viewModel)
     {
         if (!ModelState.IsValid)
@@ -70,6 +74,7 @@ public class TurmaController(
     }
 
     [HttpGet]
+    [Authorize(Roles = nameof(Perfil.Administrador))]
     public IActionResult Editar(Guid id)
     {
         Turma? turma = turmaServico.SelecionarPorId(id);
@@ -87,6 +92,7 @@ public class TurmaController(
 
     [HttpPost]
     [ValidateAntiForgeryToken]
+    [Authorize(Roles = nameof(Perfil.Administrador))]
     public IActionResult Editar(Guid id, TurmaFormularioViewModel viewModel)
     {
         if (!ModelState.IsValid)
@@ -110,6 +116,7 @@ public class TurmaController(
     }
 
     [HttpGet]
+    [Authorize(Roles = nameof(Perfil.Administrador))]
     public IActionResult Excluir(Guid id)
     {
         Turma? turma = turmaServico.SelecionarPorId(id);
@@ -122,6 +129,7 @@ public class TurmaController(
 
     [HttpPost]
     [ValidateAntiForgeryToken]
+    [Authorize(Roles = nameof(Perfil.Administrador))]
     public IActionResult Excluir(TurmaExcluirViewModel viewModel)
     {
         Result resultado = turmaServico.Excluir(viewModel.Id);

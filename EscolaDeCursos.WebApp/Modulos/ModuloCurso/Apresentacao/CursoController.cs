@@ -2,10 +2,12 @@ using AutoMapper;
 using EscolaDeCursos.Aplicacao.Modulos.ModuloCategoria;
 using EscolaDeCursos.Aplicacao.Modulos.ModuloCurso;
 using EscolaDeCursos.Dominio.Modulos.ModuloCategoria;
+using EscolaDeCursos.Dominio.Compartilhado.Identidade;
 using EscolaDeCursos.Dominio.Modulos.ModuloCurso;
 using EscolaDeCursos.WebApp.Compartilhado.Extensions;
 using EscolaDeCursos.WebApp.Modulos.ModuloCurso.Apresentacao.ViewModels;
 using FluentResults;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
@@ -35,6 +37,7 @@ public class CursoController(
     }
 
     [HttpGet]
+    [Authorize(Roles = nameof(Perfil.Administrador))]
     public IActionResult Cadastrar()
     {
         CarregarCategorias();
@@ -43,6 +46,7 @@ public class CursoController(
 
     [HttpPost]
     [ValidateAntiForgeryToken]
+    [Authorize(Roles = nameof(Perfil.Administrador))]
     public IActionResult Cadastrar(CursoFormularioViewModel viewModel)
     {
         if (!ModelState.IsValid)
@@ -68,6 +72,7 @@ public class CursoController(
     }
 
     [HttpGet]
+    [Authorize(Roles = nameof(Perfil.Administrador))]
     public IActionResult Editar(Guid id)
     {
         Curso? curso = cursoServico.SelecionarPorId(id);
@@ -85,6 +90,7 @@ public class CursoController(
 
     [HttpPost]
     [ValidateAntiForgeryToken]
+    [Authorize(Roles = nameof(Perfil.Administrador))]
     public IActionResult Editar(Guid id, CursoFormularioViewModel viewModel)
     {
         if (!ModelState.IsValid)
@@ -110,6 +116,7 @@ public class CursoController(
     }
 
     [HttpGet]
+    [Authorize(Roles = nameof(Perfil.Administrador))]
     public IActionResult Excluir(Guid id)
     {
         Curso? curso = cursoServico.SelecionarPorId(id);
@@ -124,6 +131,7 @@ public class CursoController(
 
     [HttpPost]
     [ValidateAntiForgeryToken]
+    [Authorize(Roles = nameof(Perfil.Administrador))]
     public IActionResult Excluir(CursoExcluirViewModel viewModel)
     {
         Result resultado = cursoServico.Excluir(viewModel.Id);

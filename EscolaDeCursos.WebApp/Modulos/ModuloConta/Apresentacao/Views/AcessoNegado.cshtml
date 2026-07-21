@@ -1,0 +1,13 @@
+@{
+    Layout = "_Layout";
+    ViewBag.Titulo = "Acesso negado";
+}
+
+<div class="card shadow-sm mx-auto" style="max-width: 480px;">
+    <div class="card-body p-4 text-center">
+        <div class="alert alert-danger">
+            Você não tem permissão para acessar esta página, ou ela pertence a outro usuário.
+        </div>
+        <a asp-controller="Home" asp-action="Index" class="btn btn-outline-secondary">Voltar ao início</a>
+    </div>
+</div>

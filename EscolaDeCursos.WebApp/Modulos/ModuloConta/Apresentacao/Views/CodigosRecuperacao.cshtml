@@ -1,0 +1,34 @@
+@model List<string>
+@{
+    Layout = "_Layout";
+    ViewBag.Titulo = "Autenticação em dois fatores ativada";
+}
+
+<div class="card shadow-sm mx-auto" style="max-width: 560px;">
+    <div class="card-body p-4">
+        <div class="alert alert-success">
+            Autenticação em dois fatores ativada com sucesso!
+        </div>
+
+        <p>
+            Guarde estes códigos de recuperação em um local seguro. Cada um pode ser usado
+            <strong>uma única vez</strong> para entrar caso você perca o acesso ao aplicativo
+            autenticador. Eles não serão exibidos novamente.
+        </p>
+
+        <div class="bg-light border rounded p-3 mb-3">
+            <div class="row row-cols-2 g-2 font-monospace">
+                @foreach (string codigo in Model)
+                {
+                    <div class="col">@codigo</div>
+                }
+            </div>
+        </div>
+
+        <div class="d-grid">
+            <a asp-controller="Home" asp-action="Index" class="btn btn-success">
+                Já salvei meus códigos, continuar
+            </a>
+        </div>
+    </div>
+</div>

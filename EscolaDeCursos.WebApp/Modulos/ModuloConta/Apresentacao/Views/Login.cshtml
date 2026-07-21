@@ -1,0 +1,41 @@
+@model ContaLoginViewModel
+@using EscolaDeCursos.WebApp.Modulos.ModuloConta.Apresentacao.ViewModels
+@{
+    Layout = "_Layout";
+    ViewBag.Titulo = "Entrar";
+}
+
+<div class="card shadow-sm mx-auto" style="max-width: 480px;">
+    <div class="card-body p-4">
+        <form asp-action="Login" method="post">
+            <input type="hidden" asp-for="ReturnUrl" />
+            <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+            <div class="mb-3">
+                <label asp-for="Email" class="form-label"></label>
+                <input asp-for="Email" class="form-control" autocomplete="username" />
+                <span asp-validation-for="Email" class="text-danger small"></span>
+            </div>
+            <div class="mb-3">
+                <label asp-for="Senha" class="form-label"></label>
+                <input asp-for="Senha" class="form-control" autocomplete="current-password" />
+                <span asp-validation-for="Senha" class="text-danger small"></span>
+            </div>
+            <div class="mb-3 form-check">
+                <input asp-for="LembrarMe" class="form-check-input" />
+                <label asp-for="LembrarMe" class="form-check-label"></label>
+            </div>
+
+            <div class="d-grid">
+                <button type="submit" class="btn btn-success">Entrar</button>
+            </div>
+        </form>
+
+        <hr />
+
+        <p class="text-center mb-0">
+            Ainda não tem cadastro?
+            <a asp-action="Registrar">Crie sua conta de aluno</a>
+        </p>
+    </div>
+</div>

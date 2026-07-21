@@ -10,13 +10,23 @@
         <form asp-action="Matricular" method="post">
             <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
 
-            <div class="mb-3">
-                <label asp-for="AlunoId" class="form-label"></label>
-                <select asp-for="AlunoId" class="form-select" asp-items="ViewBag.Alunos">
-                    <option value="">Selecione um aluno...</option>
-                </select>
-                <span asp-validation-for="AlunoId" class="text-danger small"></span>
-            </div>
+            @if (User.IsInRole("Administrador"))
+            {
+                <div class="mb-3">
+                    <label asp-for="AlunoId" class="form-label"></label>
+                    <select asp-for="AlunoId" class="form-select" asp-items="ViewBag.Alunos">
+                        <option value="">Selecione um aluno...</option>
+                    </select>
+                    <span asp-validation-for="AlunoId" class="text-danger small"></span>
+                </div>
+            }
+            else
+            {
+                <input type="hidden" asp-for="AlunoId" />
+                <div class="mb-3">
+                    <div class="alert alert-info small mb-0">Você está se matriculando com a sua própria conta de aluno.</div>
+                </div>
+            }
 
             <div class="mb-3">
                 <label asp-for="TurmaId" class="form-label"></label>

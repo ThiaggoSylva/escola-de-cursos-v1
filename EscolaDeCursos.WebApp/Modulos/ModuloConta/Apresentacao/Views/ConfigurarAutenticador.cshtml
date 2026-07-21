@@ -1,0 +1,43 @@
+@model ContaConfigurarAutenticadorViewModel
+@using EscolaDeCursos.WebApp.Modulos.ModuloConta.Apresentacao.ViewModels
+@{
+    Layout = "_Layout";
+    ViewBag.Titulo = "Configurar autenticação em dois fatores";
+}
+
+<div class="card shadow-sm mx-auto" style="max-width: 560px;">
+    <div class="card-body p-4">
+        <div class="alert alert-warning">
+            A configuração da autenticação em dois fatores é <strong>obrigatória</strong> para
+            todos os usuários e precisa ser concluída antes de continuar navegando na aplicação.
+        </div>
+
+        <ol>
+            <li>Instale um aplicativo autenticador (Google Authenticator, Microsoft Authenticator etc.).</li>
+            <li>Escaneie o QR Code abaixo ou digite a chave manualmente.</li>
+            <li>Informe o código de 6 dígitos gerado pelo aplicativo para confirmar.</li>
+        </ol>
+
+        <div class="text-center my-3">
+            <img src="data:image/png;base64,@Model.QrCodeBase64" alt="QR Code do autenticador" width="220" height="220" />
+        </div>
+
+        <p class="text-center">
+            Chave manual: <code>@Model.ChaveManual</code>
+        </p>
+
+        <form asp-action="ConfigurarAutenticador" method="post">
+            <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+            <div class="mb-3">
+                <label asp-for="Codigo" class="form-label"></label>
+                <input asp-for="Codigo" class="form-control" autocomplete="one-time-code" inputmode="numeric" autofocus />
+                <span asp-validation-for="Codigo" class="text-danger small"></span>
+            </div>
+
+            <div class="d-grid">
+                <button type="submit" class="btn btn-success">Confirmar e ativar</button>
+            </div>
+        </form>
+    </div>
+</div>

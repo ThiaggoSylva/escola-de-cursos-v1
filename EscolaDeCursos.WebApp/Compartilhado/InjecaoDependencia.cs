@@ -1,4 +1,7 @@
+using EscolaDeCursos.WebApp.Compartilhado.Filters;
 using EscolaDeCursos.WebApp.Compartilhado.Mapping;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc.Authorization;
 
 namespace EscolaDeCursos.WebApp.Compartilhado;
 
@@ -9,7 +12,20 @@ public static class InjecaoDependencia
         IConfiguration configuration
     )
     {
-        services.AddControllersWithViews().AddRazorOptions(options =>
+        services.AddControllersWithViews(options =>
+        {
+            // Por padrão TODA a aplicação exige usuário autenticado; somente
+            // quem já possui cadastro consegue navegar em qualquer tela.
+            // As telas de Login/Cadastro usam [AllowAnonymous] explicitamente.
+            AuthorizationPolicy politicaPadrao = new AuthorizationPolicyBuilder()
+                .RequireAuthenticatedUser()
+                .Build();
+
+            options.Filters.Add(new AuthorizeFilter(politicaPadrao));
+
+            // Obriga a configuração do MFA logo após o primeiro login.
+            options.Filters.Add<ExigirMfaFilter>();
+        }).AddRazorOptions(options =>
         {
             // Reseta a configuração padrão do MVC
             options.ViewLocationFormats.Clear();

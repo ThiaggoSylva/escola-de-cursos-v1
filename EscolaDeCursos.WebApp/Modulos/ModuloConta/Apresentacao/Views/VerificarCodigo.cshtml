@@ -1,0 +1,32 @@
+@model ContaVerificarCodigoViewModel
+@using EscolaDeCursos.WebApp.Modulos.ModuloConta.Apresentacao.ViewModels
+@{
+    Layout = "_Layout";
+    ViewBag.Titulo = "Verificação em duas etapas";
+}
+
+<div class="card shadow-sm mx-auto" style="max-width: 480px;">
+    <div class="card-body p-4">
+        <p>Abra o aplicativo autenticador no seu celular e informe o código de 6 dígitos exibido.</p>
+
+        <form asp-action="VerificarCodigo" method="post">
+            <input type="hidden" asp-for="LembrarMe" />
+            <input type="hidden" asp-for="ReturnUrl" />
+            <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+            <div class="mb-3">
+                <label asp-for="Codigo" class="form-label"></label>
+                <input asp-for="Codigo" class="form-control" autocomplete="one-time-code" inputmode="numeric" autofocus />
+                <span asp-validation-for="Codigo" class="text-danger small"></span>
+            </div>
+            <div class="mb-3 form-check">
+                <input asp-for="LembrarDispositivo" class="form-check-input" />
+                <label asp-for="LembrarDispositivo" class="form-check-label"></label>
+            </div>
+
+            <div class="d-grid">
+                <button type="submit" class="btn btn-success">Verificar</button>
+            </div>
+        </form>
+    </div>
+</div>

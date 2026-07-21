@@ -2,10 +2,12 @@ using AutoMapper;
 using EscolaDeCursos.Aplicacao.Modulos.ModuloAula;
 using EscolaDeCursos.Aplicacao.Modulos.ModuloCurso;
 using EscolaDeCursos.Dominio.Modulos.ModuloAula;
+using EscolaDeCursos.Dominio.Compartilhado.Identidade;
 using EscolaDeCursos.Dominio.Modulos.ModuloCurso;
 using EscolaDeCursos.WebApp.Compartilhado.Extensions;
 using EscolaDeCursos.WebApp.Modulos.ModuloAula.Apresentacao.ViewModels;
 using FluentResults;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EscolaDeCursos.WebApp.Modulos.ModuloAula.Apresentacao;
@@ -34,6 +36,7 @@ public class AulaController(
     }
 
     [HttpGet]
+    [Authorize(Roles = nameof(Perfil.Administrador))]
     public IActionResult Cadastrar(Guid cursoId)
     {
         Curso? curso = cursoServico.SelecionarPorId(cursoId);
@@ -48,6 +51,7 @@ public class AulaController(
 
     [HttpPost]
     [ValidateAntiForgeryToken]
+    [Authorize(Roles = nameof(Perfil.Administrador))]
     public IActionResult Cadastrar(AulaFormularioViewModel viewModel)
     {
         if (!ModelState.IsValid)
@@ -73,6 +77,7 @@ public class AulaController(
     }
 
     [HttpGet]
+    [Authorize(Roles = nameof(Perfil.Administrador))]
     public IActionResult Editar(Guid id)
     {
         Aula? aula = aulaServico.SelecionarPorId(id);
@@ -90,6 +95,7 @@ public class AulaController(
 
     [HttpPost]
     [ValidateAntiForgeryToken]
+    [Authorize(Roles = nameof(Perfil.Administrador))]
     public IActionResult Editar(Guid id, AulaFormularioViewModel viewModel)
     {
         if (!ModelState.IsValid)
@@ -115,6 +121,7 @@ public class AulaController(
     }
 
     [HttpGet]
+    [Authorize(Roles = nameof(Perfil.Administrador))]
     public IActionResult Excluir(Guid id)
     {
         Aula? aula = aulaServico.SelecionarPorId(id);
@@ -129,6 +136,7 @@ public class AulaController(
 
     [HttpPost]
     [ValidateAntiForgeryToken]
+    [Authorize(Roles = nameof(Perfil.Administrador))]
     public IActionResult Excluir(AulaExcluirViewModel viewModel)
     {
         Result resultado = aulaServico.Excluir(viewModel.Id);
