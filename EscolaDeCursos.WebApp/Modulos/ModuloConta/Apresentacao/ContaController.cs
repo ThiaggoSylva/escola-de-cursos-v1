@@ -99,7 +99,7 @@ public class ContaController(
         if (!ModelState.IsValid)
             return View(viewModel);
 
-        SignInResult resultado = await signInManager.PasswordSignInAsync(
+        var resultado = await signInManager.PasswordSignInAsync(
             viewModel.Email, viewModel.Senha, viewModel.LembrarMe, lockoutOnFailure: true);
 
         if (resultado.RequiresTwoFactor)
@@ -144,7 +144,7 @@ public class ContaController(
 
         string codigo = NormalizarCodigo(viewModel.Codigo);
 
-        SignInResult resultado = await signInManager.TwoFactorAuthenticatorSignInAsync(
+        var resultado = await signInManager.TwoFactorAuthenticatorSignInAsync(
             codigo, viewModel.LembrarMe, rememberClient: viewModel.LembrarDispositivo);
 
         if (resultado.IsLockedOut)
